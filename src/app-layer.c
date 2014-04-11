@@ -305,11 +305,13 @@ int AppLayerHandleTCPData(ThreadVars *tv, TcpReassemblyThreadCtx *ra_ctx,
              */
             if ((ssn->flags & STREAMTCP_FLAG_MIDSTREAM) && !(ssn->flags & STREAMTCP_FLAG_MIDSTREAM_SYNACK)) {
                 if (FLOW_IS_PM_DONE(f, STREAM_TOSERVER) && FLOW_IS_PP_DONE(f, STREAM_TOSERVER)) {
+                    SCLogDebug("midstream end pd %p", ssn);
                     /* midstream and toserver detection failed: give up */
                     FlowSetSessionNoApplayerInspectionFlag(f);
                     StreamTcpSetStreamFlagAppProtoDetectionCompleted(&ssn->server);
                     StreamTcpSetStreamFlagAppProtoDetectionCompleted(&ssn->client);
                     ssn->data_first_seen_dir = APP_LAYER_DATA_ALREADY_SENT_TO_APP_LAYER;
+                    goto end;
                 }
             }
 
